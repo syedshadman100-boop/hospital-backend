@@ -1,0 +1,730 @@
+generator client {
+  provider        = "prisma-client-js"
+  binaryTargets   = ["windows", "native", "debian-openssl-1.0.x", "debian-openssl-1.1.x", "debian-openssl-3.0.x", "rhel-openssl-1.0.x", "rhel-openssl-1.1.x", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+// ─── HOSPITAL / TENANT ─────────────────────────────────────
+
+model Hospital {
+  id            String    @id @default(uuid())
+  name          String
+  slug          String    @unique
+  email         String?
+  phone         String?
+  address       String?
+  city          String?
+  state         String?
+  country       String?   @default("India")
+  pincode       String?
+  logo          String?
+  banner        String?
+  website       String?
+  description   String?   @db.Text
+  latitude      Float?
+  longitude     Float?
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  users         User[]
+  departments   Department[]
+  doctors       Doctor[]
+  patients      Patient[]
+  appointments  Appointment[]
+  queues        Queue[]
+  invoices      Invoice[]
+  medicines     Medicine[]
+  labTests      LabTest[]
+  staff         Staff[]
+  holidays      Holiday[]
+  settings      HospitalSetting[]
+
+  @@map("hospitals")
+}
+
+model HospitalSetting {
+  id            String   @id @default(uuid())
+  hospitalId    String
+  hospital      Hospital @relation(fields: [hospitalId], references: [id])
+  key           String
+  value         String   @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([hospitalId, key])
+  @@map("hospital_settings")
+}
+
+// ─── AUTH / USERS / ROLES / PERMISSIONS ────────────────────
+
+model User {
+  id            String    @id @default(uuid())
+  hospitalId    String?
+  hospital      Hospital? @relation(fields: [hospitalId], references: [id])
+  email         String    @unique
+  password      String
+  firstName     String
+  lastName      String
+  phone         String?
+  avatar        String?
+  isActive      Boolean   @default(true)
+  isSuperAdmin  Boolean   @default(false)
+  lastLoginAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  userRoles     UserRole[]
+  auditLogs     AuditLog[]
+  doctor        Doctor?
+  staff         Staff?
+
+  @@map("users")
+}
+
+model Role {
+  id            String    @id @default(uuid())
+  name          String    @unique
+  description   String?
+  isSystem      Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  userRoles     UserRole[]
+  rolePermissions RolePermission[]
+
+  @@map("roles")
+}
+
+model UserRole {
+  id            String   @id @default(uuid())
+  userId        String
+  roleId        String
+  user          User     @relation(fields: [userId], references: [id])
+  role          Role     @relation(fields: [roleId], references: [id])
+  createdAt     DateTime @default(now())
+
+  @@unique([userId, roleId])
+  @@map("user_roles")
+}
+
+model Permission {
+  id            String    @id @default(uuid())
+  name          String    @unique
+  module        String
+  action        String
+  description   String?
+  createdAt     DateTime  @default(now())
+
+  rolePermissions RolePermission[]
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  id            String     @id @default(uuid())
+  roleId        String
+  permissionId  String
+  role          Role       @relation(fields: [roleId], references: [id])
+  permission    Permission @relation(fields: [permissionId], references: [id])
+  createdAt     DateTime   @default(now())
+
+  @@unique([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+// ─── DEPARTMENTS ───────────────────────────────────────────
+
+model Department {
+  id            String    @id @default(uuid())
+  hospitalId    String
+  hospital      Hospital  @relation(fields: [hospitalId], references: [id])
+  name          String
+  description   String?   @db.Text
+  icon          String?
+  image         String?
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  doctors       Doctor[]
+
+  @@map("departments")
+}
+
+// ─── DOCTORS ───────────────────────────────────────────────
+
+model Doctor {
+  id              String    @id @default(uuid())
+  hospitalId      String
+  hospital        Hospital  @relation(fields: [hospitalId], references: [id])
+  userId          String?   @unique
+  user            User?     @relation(fields: [userId], references: [id])
+  departmentId    String
+  department      Department @relation(fields: [departmentId], references: [id])
+  firstName       String
+  lastName        String
+  email           String    @unique
+  phone           String?
+  gender          String?
+  dateOfBirth     DateTime?
+  avatar          String?
+  qualification   String?
+  experience      Int       @default(0)
+  specialization  String?
+  bio             String?   @db.Text
+  consultationFee Decimal   @default(0) @db.Decimal(10, 2)
+  languages       String?
+  rating          Float     @default(0)
+  totalPatients   Int       @default(0)
+  isAvailable     Boolean   @default(true)
+  isOnline        Boolean   @default(false)
+  consultationTypes String? @default("offline,online")
+  achievements    String?   @db.Text
+  memberships     String?   @db.Text
+  videoConsultUrl String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  schedules       DoctorSchedule[]
+  vacations       DoctorVacation[]
+  appointments    Appointment[]
+  queues          Queue[]
+
+  @@map("doctors")
+}
+
+model DoctorSchedule {
+  id            String   @id @default(uuid())
+  doctorId      String
+  doctor        Doctor   @relation(fields: [doctorId], references: [id])
+  dayOfWeek     Int      // 0=Sunday, 1=Monday ... 6=Saturday
+  startTime     String   // "09:00"
+  endTime       String   // "17:00"
+  slotDuration  Int      @default(30) // minutes
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([doctorId, dayOfWeek])
+  @@map("doctor_schedules")
+}
+
+model DoctorVacation {
+  id            String   @id @default(uuid())
+  doctorId      String
+  doctor        Doctor   @relation(fields: [doctorId], references: [id])
+  startDate     DateTime
+  endDate       DateTime
+  reason        String?
+  isApproved     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("doctor_vacations")
+}
+
+// ─── PATIENTS ──────────────────────────────────────────────
+
+model Patient {
+  id              String    @id @default(uuid())
+  hospitalId      String
+  hospital        Hospital  @relation(fields: [hospitalId], references: [id])
+  userId          String?
+  firstName       String
+  lastName        String
+  email           String?
+  phone           String
+  gender          String?
+  dateOfBirth     DateTime?
+  bloodGroup      String?
+  avatar          String?
+  address         String?
+  city            String?
+  state           String?
+  pincode         String?
+  nationality     String?
+  aadhaarNumber   String?
+  panNumber       String?
+  emergencyContactName  String?
+  emergencyContactPhone String?
+  emergencyContactRelation String?
+  insuranceProvider     String?
+  insurancePolicyNumber String?
+  insuranceExpiry       DateTime?
+  allergies      String?   @db.Text
+  medicalHistory  String?   @db.Text
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  appointments    Appointment[]
+  medicalRecords  MedicalRecord[]
+  invoices        Invoice[]
+  familyMembers   PatientFamilyMember[]
+  documents       PatientDocument[]
+  queueTokens     QueueToken[]
+
+  @@map("patients")
+}
+
+model PatientFamilyMember {
+  id            String   @id @default(uuid())
+  patientId     String
+  patient       Patient  @relation(fields: [patientId], references: [id])
+  name          String
+  relationship  String
+  phone         String?
+  email         String?
+  isEmergency   Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  @@map("patient_family_members")
+}
+
+model PatientDocument {
+  id            String   @id @default(uuid())
+  patientId     String
+  patient       Patient  @relation(fields: [patientId], references: [id])
+  title         String
+  fileUrl       String
+  fileType      String
+  uploadedBy    String?
+  createdAt     DateTime @default(now())
+
+  @@map("patient_documents")
+}
+
+// ─── APPOINTMENTS ──────────────────────────────────────────
+
+model Appointment {
+  id                String    @id @default(uuid())
+  hospitalId        String
+  hospital          Hospital  @relation(fields: [hospitalId], references: [id])
+  patientId         String
+  patient           Patient   @relation(fields: [patientId], references: [id])
+  doctorId          String
+  doctor            Doctor    @relation(fields: [doctorId], references: [id])
+  appointmentDate   DateTime
+  startTime         String
+  endTime           String
+  consultationType  String    @default("offline") // offline, online, emergency
+  reason            String?   @db.Text
+  status            String    @default("scheduled") // scheduled, confirmed, in_progress, completed, cancelled, no_show
+  cancelReason      String?
+  queueTokenId      String?   @unique
+  notes             String?   @db.Text
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  medicalRecord     MedicalRecord?
+  invoice           Invoice?
+  queueToken        QueueToken?
+
+  @@index([hospitalId, appointmentDate])
+  @@index([doctorId, appointmentDate])
+  @@index([patientId])
+  @@map("appointments")
+}
+
+// ─── QUEUE MANAGEMENT ──────────────────────────────────────
+
+model Queue {
+  id            String   @id @default(uuid())
+  hospitalId    String
+  hospital      Hospital @relation(fields: [hospitalId], references: [id])
+  doctorId      String
+  doctor        Doctor   @relation(fields: [doctorId], references: [id])
+  date          DateTime @db.Date
+  currentToken  Int      @default(0)
+  status        String   @default("running") // running, break, completed, emergency
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  tokens        QueueToken[]
+
+  @@unique([doctorId, date])
+  @@map("queues")
+}
+
+model QueueToken {
+  id            String   @id @default(uuid())
+  queueId       String
+  queue         Queue    @relation(fields: [queueId], references: [id])
+  patientId     String
+  patient       Patient  @relation(fields: [patientId], references: [id])
+  appointmentId String?   @unique
+  appointment   Appointment? @relation(fields: [appointmentId], references: [id])
+  tokenNumber   Int
+  status        String   @default("waiting") // waiting, serving, completed, cancelled, no_show
+  priority      String   @default("normal") // normal, urgent, emergency
+  estimatedTime Int?     // minutes
+  calledAt      DateTime?
+  completedAt   DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("queue_tokens")
+}
+
+// ─── MEDICAL RECORDS ───────────────────────────────────────
+
+model MedicalRecord {
+  id                String       @id @default(uuid())
+  patientId         String
+  patient           Patient      @relation(fields: [patientId], references: [id])
+  appointmentId     String?      @unique
+  appointment       Appointment? @relation(fields: [appointmentId], references: [id])
+  hospitalId        String
+  diagnosis         String?      @db.Text
+  symptoms          String?      @db.Text
+  notes             String?      @db.Text
+  vitals            Json?        // {temperature, bp, heartRate, weight, height, oxygenSaturation}
+  followUpDate      DateTime?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  prescriptions     Prescription[]
+  labReports        LabReport[]
+
+  @@index([patientId])
+  @@map("medical_records")
+}
+
+model Prescription {
+  id              String        @id @default(uuid())
+  medicalRecordId String
+  medicalRecord   MedicalRecord @relation(fields: [medicalRecordId], references: [id])
+  medicineName    String
+  dosage          String
+  frequency       String
+  duration        String
+  instructions    String?
+  isBeforeFood    Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+
+  @@map("prescriptions")
+}
+
+// ─── LABORATORY ────────────────────────────────────────────
+
+model LabTest {
+  id            String   @id @default(uuid())
+  hospitalId    String
+  hospital      Hospital @relation(fields: [hospitalId], references: [id])
+  name          String
+  category      String?
+  description   String?
+  price         Decimal  @db.Decimal(10, 2)
+  turnaroundTime String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  labReports    LabReport[]
+
+  @@map("lab_tests")
+}
+
+model LabReport {
+  id              String        @id @default(uuid())
+  hospitalId      String
+  medicalRecordId String
+  medicalRecord   MedicalRecord @relation(fields: [medicalRecordId], references: [id])
+  labTestId       String
+  labTest         LabTest       @relation(fields: [labTestId], references: [id])
+  result          String?       @db.Text
+  fileUrl         String?
+  status          String        @default("pending") // pending, processing, completed
+  completedAt     DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@map("lab_reports")
+}
+
+// ─── BILLING ───────────────────────────────────────────────
+
+model Invoice {
+  id            String        @id @default(uuid())
+  hospitalId    String
+  hospital      Hospital      @relation(fields: [hospitalId], references: [id])
+  patientId     String
+  patient       Patient       @relation(fields: [patientId], references: [id])
+  appointmentId String?       @unique
+  appointment   Appointment?  @relation(fields: [appointmentId], references: [id])
+  invoiceNumber String        @unique
+  subtotal      Decimal       @db.Decimal(10, 2)
+  taxAmount     Decimal       @db.Decimal(10, 2) @default(0)
+  discount      Decimal       @db.Decimal(10, 2) @default(0)
+  totalAmount   Decimal       @db.Decimal(10, 2)
+  paidAmount    Decimal       @db.Decimal(10, 2) @default(0)
+  status        String        @default("pending") // pending, partial, paid, cancelled, refunded
+  paymentMethod String?       // cash, card, upi, online, insurance
+  notes         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  payments      Payment[]
+  invoiceItems  InvoiceItem[]
+
+  @@index([hospitalId, createdAt])
+  @@index([patientId])
+  @@map("invoices")
+}
+
+model InvoiceItem {
+  id            String   @id @default(uuid())
+  invoiceId     String
+  invoice       Invoice  @relation(fields: [invoiceId], references: [id])
+  description   String
+  quantity      Int      @default(1)
+  unitPrice     Decimal  @db.Decimal(10, 2)
+  total         Decimal  @db.Decimal(10, 2)
+  createdAt     DateTime @default(now())
+
+  @@map("invoice_items")
+}
+
+model Payment {
+  id              String    @id @default(uuid())
+  invoiceId       String
+  invoice         Invoice   @relation(fields: [invoiceId], references: [id])
+  amount          Decimal   @db.Decimal(10, 2)
+  paymentMethod   String    // cash, card, upi, online, insurance
+  transactionId   String?
+  status          String    @default("success") // pending, success, failed, refunded
+  refundedAmount  Decimal?  @db.Decimal(10, 2)
+  refundReason    String?
+  paymentDate     DateTime  @default(now())
+  createdAt       DateTime  @default(now())
+
+  @@map("payments")
+}
+
+// ─── PHARMACY / MEDICINES ──────────────────────────────────
+
+model Medicine {
+  id            String    @id @default(uuid())
+  hospitalId    String
+  hospital      Hospital  @relation(fields: [hospitalId], references: [id])
+  name          String
+  genericName   String?
+  category      String?
+  manufacturer  String?
+  unit          String    @default("strip")
+  price         Decimal   @db.Decimal(10, 2)
+  stockQuantity Int       @default(0)
+  minStock      Int       @default(10)
+  expiryDate    DateTime?
+  batchNumber   String?
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("medicines")
+}
+
+// ─── STAFF ─────────────────────────────────────────────────
+
+model Staff {
+  id            String    @id @default(uuid())
+  hospitalId    String
+  hospital      Hospital  @relation(fields: [hospitalId], references: [id])
+  userId        String?   @unique
+  user          User?     @relation(fields: [userId], references: [id])
+  employeeId    String    @unique
+  firstName     String
+  lastName      String
+  email         String?
+  phone         String?
+  gender        String?
+  dateOfBirth   DateTime?
+  department    String?
+  designation   String?
+  joinDate      DateTime?
+  salary        Decimal?  @db.Decimal(10, 2)
+  shift         String?   // morning, afternoon, night
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  attendance    Attendance[]
+  leaves        Leave[]
+
+  @@map("staff")
+}
+
+model Attendance {
+  id            String   @id @default(uuid())
+  staffId       String
+  staff         Staff    @relation(fields: [staffId], references: [id])
+  date          DateTime @db.Date
+  checkIn       DateTime?
+  checkOut      DateTime?
+  status        String   @default("present") // present, absent, half_day, late, on_leave
+  notes         String?
+  createdAt     DateTime @default(now())
+
+  @@unique([staffId, date])
+  @@map("attendance")
+}
+
+model Leave {
+  id            String   @id @default(uuid())
+  staffId       String
+  staff         Staff    @relation(fields: [staffId], references: [id])
+  type          String   // casual, sick, earned, maternity, paternity, unpaid
+  startDate     DateTime
+  endDate       DateTime
+  reason        String?
+  status        String   @default("pending") // pending, approved, rejected
+  approvedBy    String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("leaves")
+}
+
+// ─── HOLIDAYS ──────────────────────────────────────────────
+
+model Holiday {
+  id            String   @id @default(uuid())
+  hospitalId    String
+  hospital      Hospital @relation(fields: [hospitalId], references: [id])
+  name          String
+  date          DateTime @db.Date
+  description   String?
+  createdAt     DateTime @default(now())
+
+  @@unique([hospitalId, date])
+  @@map("holidays")
+}
+
+// ─── NOTIFICATIONS ─────────────────────────────────────────
+
+model Notification {
+  id            String   @id @default(uuid())
+  userId        String
+  title         String
+  message       String   @db.Text
+  type          String   // appointment, payment, system, reminder
+  channel       String?  // email, sms, whatsapp, push
+  isRead        Boolean  @default(false)
+  data          Json?
+  sentAt        DateTime?
+  createdAt     DateTime @default(now())
+
+  @@index([userId, isRead])
+  @@map("notifications")
+}
+
+// ─── CMS / WEBSITE ─────────────────────────────────────────
+
+model CmsPage {
+  id            String   @id @default(uuid())
+  slug          String   @unique
+  title         String
+  content       String   @db.LongText
+  metaTitle     String?
+  metaDesc      String?
+  isPublished   Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("cms_pages")
+}
+
+model Blog {
+  id            String   @id @default(uuid())
+  title         String
+  slug          String   @unique
+  content       String   @db.LongText
+  excerpt       String?  @db.Text
+  coverImage    String?
+  author        String?
+  tags          String?
+  category      String?
+  isPublished   Boolean  @default(false)
+  publishedAt   DateTime?
+  viewCount     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("blogs")
+}
+
+model Faq {
+  id            String   @id @default(uuid())
+  question      String
+  answer        String   @db.Text
+  category      String?
+  sortOrder     Int      @default(0)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("faqs")
+}
+
+model Testimonial {
+  id            String   @id @default(uuid())
+  patientName   String
+  patientAvatar String?
+  rating        Int      @default(5)
+  content       String   @db.Text
+  isPublished   Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  @@map("testimonials")
+}
+
+model Gallery {
+  id            String   @id @default(uuid())
+  title         String?
+  fileUrl       String
+  fileType      String   // image, video
+  category      String?
+  sortOrder     Int      @default(0)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  @@map("gallery")
+}
+
+model ContactMessage {
+  id            String   @id @default(uuid())
+  name          String
+  email         String
+  phone         String?
+  subject       String?
+  message       String   @db.Text
+  isRead        Boolean  @default(false)
+  repliedAt     DateTime?
+  createdAt     DateTime @default(now())
+
+  @@map("contact_messages")
+}
+
+// ─── AUDIT LOGS ────────────────────────────────────────────
+
+model AuditLog {
+  id            String   @id @default(uuid())
+  userId        String?
+  user          User?    @relation(fields: [userId], references: [id])
+  action        String   // CREATE, UPDATE, DELETE
+  module        String   // patient, appointment, billing, etc.
+  entityId      String?
+  oldData       Json?
+  newData       Json?
+  ipAddress     String?
+  userAgent     String?
+  createdAt     DateTime @default(now())
+
+  @@index([userId])
+  @@index([module, createdAt])
+  @@map("audit_logs")
+}
