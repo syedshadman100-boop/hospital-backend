@@ -22,8 +22,34 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 export class HospitalController {
   constructor(private hospitalService: HospitalService) {}
 
+  @Get('public/:slug')
+  @ApiOperation({ summary: 'Get hospital by slug (public, no auth)' })
+  findBySlug(@Param('slug') slug: string) {
+    return this.hospitalService.findBySlug(slug);
+  }
+
+  @Get('public/:slug/settings')
+  @ApiOperation({ summary: 'Get hospital settings (public, no auth)' })
+  getSettings(@Param('slug') slug: string) {
+    return this.hospitalService.getSettings(slug);
+  }
+
+  @Get('public/domain/lookup/:domain')
+  @ApiOperation({ summary: 'Look up hospital slug by domain (public, no auth)' })
+  lookupByDomain(@Param('domain') domain: string) {
+    return this.hospitalService.findSlugByDomain(domain);
+  }
+
+  @Get('public/domain/:domain')
+  @ApiOperation({ summary: 'Get hospital by domain (public, no auth)' })
+  findByDomain(@Param('domain') domain: string) {
+    return this.hospitalService.findByDomain(domain);
+  }
+
   @Get()
-  @ApiOperation({ summary: 'Get all hospitals' })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get all hospitals (auth required)' })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'search', required: false, type: String })

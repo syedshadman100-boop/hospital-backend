@@ -11,6 +11,16 @@ export class CreateHospitalDto {
   @IsString()
   slug: string;
 
+  @ApiPropertyOptional({ example: 'cityhospital.com' })
+  @IsOptional()
+  @IsString()
+  domain?: string;
+
+  @ApiPropertyOptional({ example: 'www.cityhospital.com' })
+  @IsOptional()
+  @IsString()
+  customDomain?: string;
+
   @ApiPropertyOptional({ example: 'contact@cityhospital.com' })
   @IsOptional()
   @IsEmail()

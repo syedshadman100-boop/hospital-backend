@@ -1,0 +1,156 @@
+import { PrismaService } from '../../prisma/prisma.service';
+import { CreateHospitalDto, UpdateHospitalDto } from './dto/hospital.dto';
+export declare class HospitalService {
+    private prisma;
+    constructor(prisma: PrismaService);
+    findBySlug(slug: string): Promise<{
+        departments: {
+            description: string | null;
+            id: string;
+            name: string;
+        }[];
+        _count: {
+            departments: number;
+            doctors: number;
+            patients: number;
+        };
+    } & {
+        description: string | null;
+        email: string | null;
+        phone: string | null;
+        id: string;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        slug: string;
+        address: string | null;
+        city: string | null;
+        state: string | null;
+        country: string | null;
+        pincode: string | null;
+        latitude: number | null;
+        longitude: number | null;
+        logo: string | null;
+        banner: string | null;
+        website: string | null;
+    }>;
+    getSettings(slug: string): Promise<{
+        hospitalId: string;
+        name: string;
+        settings: Record<string, string>;
+    }>;
+    findAll(page?: number, limit?: number, search?: string): Promise<{
+        data: {
+            description: string | null;
+            email: string | null;
+            phone: string | null;
+            id: string;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+            name: string;
+            slug: string;
+            address: string | null;
+            city: string | null;
+            state: string | null;
+            country: string | null;
+            pincode: string | null;
+            latitude: number | null;
+            longitude: number | null;
+            logo: string | null;
+            banner: string | null;
+            website: string | null;
+        }[];
+        meta: {
+            total: number;
+            page: number;
+            limit: number;
+            totalPages: number;
+        };
+    }>;
+    findOne(id: string): Promise<{
+        description: string | null;
+        email: string | null;
+        phone: string | null;
+        id: string;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        slug: string;
+        address: string | null;
+        city: string | null;
+        state: string | null;
+        country: string | null;
+        pincode: string | null;
+        latitude: number | null;
+        longitude: number | null;
+        logo: string | null;
+        banner: string | null;
+        website: string | null;
+    }>;
+    create(dto: CreateHospitalDto): Promise<{
+        description: string | null;
+        email: string | null;
+        phone: string | null;
+        id: string;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        slug: string;
+        address: string | null;
+        city: string | null;
+        state: string | null;
+        country: string | null;
+        pincode: string | null;
+        latitude: number | null;
+        longitude: number | null;
+        logo: string | null;
+        banner: string | null;
+        website: string | null;
+    }>;
+    update(id: string, dto: UpdateHospitalDto): Promise<{
+        description: string | null;
+        email: string | null;
+        phone: string | null;
+        id: string;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        slug: string;
+        address: string | null;
+        city: string | null;
+        state: string | null;
+        country: string | null;
+        pincode: string | null;
+        latitude: number | null;
+        longitude: number | null;
+        logo: string | null;
+        banner: string | null;
+        website: string | null;
+    }>;
+    remove(id: string): Promise<{
+        description: string | null;
+        email: string | null;
+        phone: string | null;
+        id: string;
+        isActive: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+        name: string;
+        slug: string;
+        address: string | null;
+        city: string | null;
+        state: string | null;
+        country: string | null;
+        pincode: string | null;
+        latitude: number | null;
+        longitude: number | null;
+        logo: string | null;
+        banner: string | null;
+        website: string | null;
+    }>;
+}

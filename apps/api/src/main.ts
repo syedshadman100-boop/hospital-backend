@@ -13,8 +13,9 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter());
   app.setGlobalPrefix('api');
   app.use(cookieParser());
+  const corsOrigin = configService.get('CORS_ORIGIN', 'http://localhost:3000');
   app.enableCors({
-    origin: configService.get('CORS_ORIGIN', 'http://localhost:3000'),
+    origin: corsOrigin === '*' ? true : corsOrigin,
     credentials: true,
   });
   app.useGlobalPipes(

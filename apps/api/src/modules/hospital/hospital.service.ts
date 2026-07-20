@@ -6,6 +6,68 @@ import { CreateHospitalDto, UpdateHospitalDto } from './dto/hospital.dto';
 export class HospitalService {
   constructor(private prisma: PrismaService) {}
 
+  async findBySlug(slug: string) {
+    const hospital = await this.prisma.hospital.findFirst({
+      where: { slug, isActive: true },
+      include: {
+        departments: { where: { isActive: true }, select: { id: true, name: true, description: true } },
+        _count: { select: { doctors: true, departments: true, patients: true } },
+      },
+    });
+    if (!hospital) throw new NotFoundException('Hospital not found');
+    return hospital;
+  }
+
+  async findByDomain(domain: string) {
+    const hospital = await this.prisma.hospital.findFirst({
+      where: {
+        isActive: true,
+        OR: [
+          { domain: domain },
+          { customDomain: domain },
+        ],
+      },
+      include: {
+        departments: { where: { isActive: true }, select: { id: true, name: true, description: true } },
+        _count: { select: { doctors: true, departments: true, patients: true } },
+      },
+    });
+    if (!hospital) throw new NotFoundException('Hospital not found for this domain');
+    return hospital;
+  }
+
+  async findSlugByDomain(domain: string): Promise<{ slug: string } | null> {
+    const hospital = await this.prisma.hospital.findFirst({
+      where: {
+        isActive: true,
+        OR: [
+          { domain: domain },
+          { customDomain: domain },
+        ],
+      },
+      select: { slug: true },
+    });
+    return hospital ? { slug: hospital.slug } : null;
+  }
+
+  async getSettings(slug: string) {
+    const hospital = await this.prisma.hospital.findFirst({
+      where: { slug, isActive: true },
+      select: { id: true, name: true },
+    });
+    if (!hospital) throw new NotFoundException('Hospital not found');
+
+    const settings = await this.prisma.hospitalSetting.findMany({
+      where: { hospitalId: hospital.id },
+    });
+
+    const map: Record<string, string> = {};
+    for (const s of settings) {
+      map[s.key] = s.value;
+    }
+    return { hospitalId: hospital.id, name: hospital.name, settings: map };
+  }
+
   async findAll(page = 1, limit = 10, search?: string) {
     const skip = (page - 1) * limit;
 

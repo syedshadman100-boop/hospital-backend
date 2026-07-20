@@ -99,8 +99,6 @@ export class DoctorController {
   }
 
   @Get(':id/slots')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get available slots for a doctor on a given date' })
   @ApiQuery({ name: 'date', type: String, description: 'YYYY-MM-DD format' })
   getAvailableSlots(

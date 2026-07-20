@@ -6,6 +6,9 @@ import {
   IsDateString,
   Min,
   Max,
+  IsEmail,
+  IsNumberString,
+  Matches,
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PartialType } from '@nestjs/swagger';
@@ -105,4 +108,45 @@ export class AppointmentFilterDto {
   @Min(1)
   @Max(100)
   limit?: number;
+}
+
+export class PublicCreateAppointmentDto {
+  @ApiProperty({ example: 'uuid-of-doctor' })
+  @IsString()
+  doctorId: string;
+
+  @ApiProperty({ example: '2025-07-20' })
+  @IsDateString()
+  appointmentDate: string;
+
+  @ApiProperty({ example: '02:00 PM' })
+  @IsString()
+  timeSlot: string;
+
+  @ApiProperty({ example: 'Syed' })
+  @IsString()
+  fullName: string;
+
+  @ApiProperty({ example: '9876543210' })
+  @IsString()
+  phone: string;
+
+  @ApiProperty({ example: 'syed@example.com' })
+  @IsEmail()
+  email: string;
+
+  @ApiProperty({ example: 25 })
+  @IsInt()
+  @Min(1)
+  @Max(120)
+  age: number;
+
+  @ApiProperty({ example: 'male', enum: ['male', 'female', 'other'] })
+  @IsString()
+  gender: string;
+
+  @ApiPropertyOptional({ example: 'Chest pain since 2 days' })
+  @IsOptional()
+  @IsString()
+  reason?: string;
 }

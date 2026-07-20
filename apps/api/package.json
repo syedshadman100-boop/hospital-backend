@@ -10,6 +10,7 @@
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\""
   },
   "dependencies": {
+    "@hms/prisma": "file:../../packages/prisma",
     "@nestjs/common": "^11.0.0",
     "@nestjs/config": "^4.0.0",
     "@nestjs/core": "^11.0.0",
@@ -39,6 +40,7 @@
     "@types/express": "^5.0.0",
     "@types/node": "^22.0.0",
     "@types/passport-jwt": "^4.0.1",
+    "prisma": "^7.8.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.0"
   }

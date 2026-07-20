@@ -217,26 +217,21 @@ export class DoctorService {
     });
 
     if (!schedule || !schedule.isActive) {
-      return { date, dayOfWeek, slots: [], message: 'Doctor is not available on this day' };
+      return { data: [] };
     }
 
-    const existingAppointments = await this.prisma.appointment.findMany({
-      where: {
-        doctorId,
-        appointmentDate: {
-          gte: new Date(`${date}T00:00:00.000Z`),
-          lt: new Date(`${date}T23:59:59.999Z`),
-        },
-        status: { in: ['scheduled', 'confirmed', 'in_progress'] },
-      },
-      select: { startTime: true, endTime: true },
-    });
+    const existingAppointments = await this.prisma.$queryRaw<
+      { startTime: string }[]
+    >`SELECT startTime FROM appointments 
+      WHERE doctorId = ${doctorId} 
+      AND DATE(appointmentDate) = ${date}
+      AND status IN ('scheduled', 'confirmed', 'in_progress')`;
 
     const bookedSlots = new Set(
       existingAppointments.map((apt) => apt.startTime),
     );
 
-    const slots: { time: string; isBooked: boolean }[] = [];
+    const allSlots: { time: string; isBooked: boolean }[] = [];
     const [startHour, startMinute] = schedule.startTime.split(':').map(Number);
     const [endHour, endMinute] = schedule.endTime.split(':').map(Number);
 
@@ -246,25 +241,19 @@ export class DoctorService {
     while (currentMinutes + schedule.slotDuration <= endMinutes) {
       const hours = Math.floor(currentMinutes / 60);
       const minutes = currentMinutes % 60;
-      const timeStr = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+      const time24 = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
 
-      slots.push({
-        time: timeStr,
-        isBooked: bookedSlots.has(timeStr),
-      });
+      let h = hours;
+      const period = h >= 12 ? 'PM' : 'AM';
+      if (h > 12) h -= 12;
+      if (h === 0) h = 12;
+      const label = `${String(h).padStart(2, '0')}:${String(minutes).padStart(2, '0')} ${period}`;
+
+      allSlots.push({ time: label, isBooked: bookedSlots.has(time24) });
 
       currentMinutes += schedule.slotDuration;
     }
 
-    return {
-      date,
-      dayOfWeek,
-      schedule: {
-        startTime: schedule.startTime,
-        endTime: schedule.endTime,
-        slotDuration: schedule.slotDuration,
-      },
-      slots,
-    };
+    return { data: allSlots };
   }
 }

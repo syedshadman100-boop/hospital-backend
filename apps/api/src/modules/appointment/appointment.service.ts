@@ -9,11 +9,84 @@ import {
   CreateAppointmentDto,
   UpdateAppointmentDto,
   AppointmentFilterDto,
+  PublicCreateAppointmentDto,
 } from './dto/appointment.dto';
 
 @Injectable()
 export class AppointmentService {
   constructor(private prisma: PrismaService) {}
+
+  async publicCreate(dto: PublicCreateAppointmentDto) {
+    const hospital = await this.prisma.hospital.findFirst({ where: { isActive: true } });
+    if (!hospital) throw new BadRequestException('No active hospital found');
+
+    const doctor = await this.prisma.doctor.findFirst({
+      where: { id: dto.doctorId, hospitalId: hospital.id, isAvailable: true },
+    });
+    if (!doctor) throw new BadRequestException('Doctor not found or not available');
+
+    let patient = await this.prisma.patient.findFirst({
+      where: { phone: dto.phone, hospitalId: hospital.id },
+    });
+
+    if (!patient) {
+      const birthYear = new Date().getFullYear() - dto.age;
+      patient = await this.prisma.patient.create({
+        data: {
+          hospitalId: hospital.id,
+          firstName: dto.fullName.split(' ')[0] || dto.fullName,
+          lastName: dto.fullName.split(' ').slice(1).join(' ') || '',
+          phone: dto.phone,
+          email: dto.email,
+          dateOfBirth: new Date(birthYear, 0, 1),
+          gender: dto.gender,
+          isActive: true,
+        },
+      });
+    }
+
+    const appointmentDate = new Date(dto.appointmentDate);
+    if (isNaN(appointmentDate.getTime())) {
+      throw new BadRequestException('Invalid appointment date');
+    }
+
+    const match = dto.timeSlot.match(/(\d{2}):(\d{2})\s*(AM|PM)/i);
+    if (!match) throw new BadRequestException('Invalid time slot format. Use "02:00 PM"');
+
+    let hours = parseInt(match[1], 10);
+    const minutes = match[2];
+    const period = match[3].toUpperCase();
+    if (period === 'PM' && hours !== 12) hours += 12;
+    if (period === 'AM' && hours === 12) hours = 0;
+    const startTime = `${String(hours).padStart(2, '0')}:${minutes}`;
+    const endHours = hours + 1;
+    const endTime = `${String(endHours).padStart(2, '0')}:${minutes}`;
+
+    const appointment = await this.prisma.appointment.create({
+      data: {
+        hospitalId: hospital.id,
+        patientId: patient.id,
+        doctorId: dto.doctorId,
+        appointmentDate,
+        startTime,
+        endTime,
+        consultationType: 'offline',
+        reason: dto.reason,
+        status: 'scheduled',
+      },
+      include: {
+        patient: { select: { id: true, firstName: true, lastName: true, phone: true } },
+        doctor: { select: { id: true, firstName: true, lastName: true, specialization: true } },
+      },
+    });
+
+    return {
+      success: true,
+      message: 'Appointment booked successfully',
+      reference: `APT-${appointment.id.slice(-8).toUpperCase()}`,
+      appointment,
+    };
+  }
 
   async create(dto: CreateAppointmentDto, hospitalId: string) {
     const patient = await this.prisma.patient.findFirst({

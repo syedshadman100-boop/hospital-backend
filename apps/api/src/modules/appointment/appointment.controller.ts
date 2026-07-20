@@ -15,6 +15,7 @@ import {
   CreateAppointmentDto,
   UpdateAppointmentDto,
   AppointmentFilterDto,
+  PublicCreateAppointmentDto,
 } from './dto/appointment.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -25,6 +26,12 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 @Controller('appointments')
 export class AppointmentController {
   constructor(private appointmentService: AppointmentService) {}
+
+  @Post('public')
+  @ApiOperation({ summary: 'Public booking from landing page (no auth required)' })
+  publicCreate(@Body() dto: PublicCreateAppointmentDto) {
+    return this.appointmentService.publicCreate(dto);
+  }
 
   @Get()
   @UseGuards(JwtAuthGuard)
