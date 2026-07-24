@@ -4,83 +4,17 @@ export declare class RoleController {
     private roleService;
     constructor(roleService: RoleService);
     findAll(): Promise<{
-        id: string;
-        name: string;
-        description: string | null;
-        isSystem: boolean;
-        usersCount: number;
-        permissionsCount: number;
-        createdAt: Date;
-        updatedAt: Date;
+        id: any;
+        name: any;
+        description: any;
+        isSystem: any;
+        usersCount: any;
+        permissionsCount: any;
+        createdAt: any;
+        updatedAt: any;
     }[]>;
-    getPermissions(): Promise<{
-        description: string | null;
-        id: string;
-        createdAt: Date;
-        name: string;
-        module: string;
-        action: string;
-    }[]>;
-    findOne(id: string): Promise<{
-        permissions: {
-            description: string | null;
-            id: string;
-            name: string;
-            module: string;
-            action: string;
-        }[];
-        usersCount: number;
-        rolePermissions: undefined;
-        _count: undefined;
-        description: string | null;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        name: string;
-        isSystem: boolean;
-    }>;
-    create(dto: CreateRoleDto): Promise<{
-        rolePermissions: ({
-            permission: {
-                id: string;
-                name: string;
-                module: string;
-                action: string;
-            };
-        } & {
-            id: string;
-            createdAt: Date;
-            roleId: string;
-            permissionId: string;
-        })[];
-    } & {
-        description: string | null;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        name: string;
-        isSystem: boolean;
-    }>;
-    update(id: string, dto: UpdateRoleDto): Promise<{
-        rolePermissions: ({
-            permission: {
-                id: string;
-                name: string;
-                module: string;
-                action: string;
-            };
-        } & {
-            id: string;
-            createdAt: Date;
-            roleId: string;
-            permissionId: string;
-        })[];
-    } & {
-        description: string | null;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        name: string;
-        isSystem: boolean;
-    }>;
+    getPermissions(): Promise<any[]>;
+    findOne(id: string): Promise<any>;
+    create(dto: CreateRoleDto): Promise<any>;
+    update(id: string, dto: UpdateRoleDto): Promise<any>;
 }

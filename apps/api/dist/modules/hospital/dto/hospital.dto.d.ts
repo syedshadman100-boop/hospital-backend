@@ -1,6 +1,8 @@
 export declare class CreateHospitalDto {
     name: string;
     slug: string;
+    domain?: string;
+    customDomain?: string;
     email?: string;
     phone?: string;
     address?: string;

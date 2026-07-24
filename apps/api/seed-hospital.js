@@ -6,7 +6,7 @@ function uuid() {
 }
 
 async function seed() {
-  const c = await mysql.createConnection('mysql://root@localhost:3307/hospital');
+  const c = await mysql.createConnection(process.env.DATABASE_URL);
   
   const [existing] = await c.execute("SELECT id FROM hospitals WHERE slug = 'agra-heart-centre'");
   if (existing.length > 0) {

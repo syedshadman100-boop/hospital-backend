@@ -31,6 +31,12 @@ let HospitalController = class HospitalController {
     getSettings(slug) {
         return this.hospitalService.getSettings(slug);
     }
+    lookupByDomain(domain) {
+        return this.hospitalService.findSlugByDomain(domain);
+    }
+    findByDomain(domain) {
+        return this.hospitalService.findByDomain(domain);
+    }
     findAll(page, limit, search) {
         return this.hospitalService.findAll(page ? parseInt(page, 10) : 1, limit ? parseInt(limit, 10) : 10, search);
     }
@@ -64,6 +70,22 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], HospitalController.prototype, "getSettings", null);
+__decorate([
+    (0, common_1.Get)('public/domain/lookup/:domain'),
+    (0, swagger_1.ApiOperation)({ summary: 'Look up hospital slug by domain (public, no auth)' }),
+    __param(0, (0, common_1.Param)('domain')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], HospitalController.prototype, "lookupByDomain", null);
+__decorate([
+    (0, common_1.Get)('public/domain/:domain'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get hospital by domain (public, no auth)' }),
+    __param(0, (0, common_1.Param)('domain')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], HospitalController.prototype, "findByDomain", null);
 __decorate([
     (0, common_1.Get)(),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),

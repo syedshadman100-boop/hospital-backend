@@ -10,52 +10,7 @@ export declare class AuthService {
     register(dto: RegisterDto): Promise<TokenResponseDto>;
     login(dto: LoginDto): Promise<TokenResponseDto>;
     refreshToken(userId: string): Promise<TokenResponseDto>;
-    getProfile(userId: string): Promise<{
-        roles: string[];
-        permissions: string[];
-        userRoles: ({
-            role: {
-                rolePermissions: ({
-                    permission: {
-                        description: string | null;
-                        id: string;
-                        createdAt: Date;
-                        name: string;
-                        module: string;
-                        action: string;
-                    };
-                } & {
-                    id: string;
-                    createdAt: Date;
-                    roleId: string;
-                    permissionId: string;
-                })[];
-            } & {
-                description: string | null;
-                id: string;
-                createdAt: Date;
-                updatedAt: Date;
-                name: string;
-                isSystem: boolean;
-            };
-        } & {
-            id: string;
-            createdAt: Date;
-            userId: string;
-            roleId: string;
-        })[];
-        email: string;
-        firstName: string;
-        lastName: string;
-        phone: string | null;
-        id: string;
-        hospitalId: string | null;
-        avatar: string | null;
-        isActive: boolean;
-        isSuperAdmin: boolean;
-        lastLoginAt: Date | null;
-        createdAt: Date;
-        updatedAt: Date;
-    }>;
+    private getUserRolesAndPermissions;
+    getProfile(userId: string): Promise<any>;
     private generateTokens;
 }

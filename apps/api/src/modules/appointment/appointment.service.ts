@@ -225,7 +225,7 @@ export class AppointmentService {
         orderBy: { appointmentDate: 'desc' },
         include: {
           patient: { select: { id: true, firstName: true, lastName: true, phone: true } },
-          doctor: { select: { id: true, firstName: true, lastName: true, specialization: true } },
+          doctor: { select: { id: true, userId: true, firstName: true, lastName: true, specialization: true } },
         },
       }),
       this.prisma.appointment.count({ where }),
@@ -278,7 +278,6 @@ export class AppointmentService {
         },
         queueToken: {
           select: {
-            id: true,
             tokenNumber: true,
             status: true,
             priority: true,
@@ -286,9 +285,15 @@ export class AppointmentService {
         },
       },
     });
-    if (!appointment) throw new NotFoundException('Appointment not found');
+
+    if (!appointment) {
+      throw new NotFoundException('Appointment not found');
+    }
+
     return appointment;
   }
+
+
 
   async update(id: string, dto: UpdateAppointmentDto) {
     const existing = await this.findOne(id);
@@ -386,7 +391,7 @@ export class AppointmentService {
     }
 
     if (appointment.queueTokenId) {
-      await this.prisma.queueToken.update({
+      await this.prisma.queueToken.updateMany({
         where: { id: appointment.queueTokenId },
         data: { status: 'cancelled' },
       });

@@ -4,18 +4,7 @@ export declare class NotificationController {
     private notificationService;
     constructor(notificationService: NotificationService);
     findAll(user: any, filters: NotificationFilterDto): Promise<{
-        data: {
-            type: string;
-            title: string;
-            id: string;
-            createdAt: Date;
-            userId: string;
-            data: import("@prisma/client/runtime/client").JsonValue | null;
-            message: string;
-            isRead: boolean;
-            channel: string | null;
-            sentAt: Date | null;
-        }[];
+        data: any[];
         meta: {
             total: number;
             page: number;
@@ -26,31 +15,9 @@ export declare class NotificationController {
     getUnreadCount(user: any): Promise<{
         count: number;
     }>;
-    markAsRead(id: string): Promise<{
-        type: string;
-        title: string;
-        id: string;
-        createdAt: Date;
-        userId: string;
-        data: import("@prisma/client/runtime/client").JsonValue | null;
-        message: string;
-        isRead: boolean;
-        channel: string | null;
-        sentAt: Date | null;
-    }>;
+    markAsRead(id: string): Promise<any>;
     markAllAsRead(user: any): Promise<{
         message: string;
     }>;
-    create(dto: CreateNotificationDto): Promise<{
-        type: string;
-        title: string;
-        id: string;
-        createdAt: Date;
-        userId: string;
-        data: import("@prisma/client/runtime/client").JsonValue | null;
-        message: string;
-        isRead: boolean;
-        channel: string | null;
-        sentAt: Date | null;
-    }>;
+    create(dto: CreateNotificationDto): Promise<any>;
 }

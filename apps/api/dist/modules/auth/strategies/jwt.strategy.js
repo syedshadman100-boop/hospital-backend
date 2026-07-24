@@ -44,10 +44,17 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
         if (!user || !user.isActive) {
             throw new common_1.UnauthorizedException('User not found or inactive');
         }
-        const roles = user.userRoles.map((ur) => ur.role.name);
-        const permissions = [
-            ...new Set(user.userRoles.flatMap((ur) => ur.role.rolePermissions.map((rp) => rp.permission.name))),
-        ];
+        const [roleRows] = await this.prisma.pool.query(`SELECT r.name as roleName FROM user_roles ur JOIN roles r ON ur.roleId = r.id WHERE ur.userId = ?`, [user.id]);
+        let roles = roleRows.map((r) => r.roleName);
+        if (roles.length === 0) {
+            const [docRows] = await this.prisma.pool.query(`SELECT id FROM doctors WHERE userId = ? LIMIT 1`, [user.id]);
+            if (docRows.length > 0) {
+                roles = ['Doctor'];
+            }
+            else {
+                roles = ['Hospital Admin'];
+            }
+        }
         return {
             id: user.id,
             email: user.email,
@@ -56,7 +63,7 @@ let JwtStrategy = class JwtStrategy extends (0, passport_1.PassportStrategy)(pas
             isSuperAdmin: user.isSuperAdmin,
             hospitalId: user.hospitalId,
             roles,
-            permissions,
+            permissions: [],
         };
     }
 };

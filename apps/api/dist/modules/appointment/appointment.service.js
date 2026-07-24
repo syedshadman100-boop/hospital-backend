@@ -192,7 +192,7 @@ let AppointmentService = class AppointmentService {
                 orderBy: { appointmentDate: 'desc' },
                 include: {
                     patient: { select: { id: true, firstName: true, lastName: true, phone: true } },
-                    doctor: { select: { id: true, firstName: true, lastName: true, specialization: true } },
+                    doctor: { select: { id: true, userId: true, firstName: true, lastName: true, specialization: true } },
                 },
             }),
             this.prisma.appointment.count({ where }),
@@ -243,7 +243,6 @@ let AppointmentService = class AppointmentService {
                 },
                 queueToken: {
                     select: {
-                        id: true,
                         tokenNumber: true,
                         status: true,
                         priority: true,
@@ -251,8 +250,9 @@ let AppointmentService = class AppointmentService {
                 },
             },
         });
-        if (!appointment)
+        if (!appointment) {
             throw new common_1.NotFoundException('Appointment not found');
+        }
         return appointment;
     }
     async update(id, dto) {
@@ -336,7 +336,7 @@ let AppointmentService = class AppointmentService {
             throw new common_1.BadRequestException(`Cannot cancel an appointment with status '${appointment.status}'`);
         }
         if (appointment.queueTokenId) {
-            await this.prisma.queueToken.update({
+            await this.prisma.queueToken.updateMany({
                 where: { id: appointment.queueTokenId },
                 data: { status: 'cancelled' },
             });

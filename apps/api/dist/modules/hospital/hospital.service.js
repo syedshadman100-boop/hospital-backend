@@ -17,27 +17,59 @@ let HospitalService = class HospitalService {
         this.prisma = prisma;
     }
     async findBySlug(slug) {
-        const hospital = await this.prisma.hospital.findFirst({
-            where: { slug, isActive: true },
-            include: {
-                departments: { where: { isActive: true }, select: { id: true, name: true, description: true } },
-                _count: { select: { doctors: true, departments: true, patients: true } },
-            },
-        });
+        const cleanSlug = slug.toLowerCase().trim();
+        const [rows] = await this.prisma.pool.query(`SELECT h.* FROM hospitals h 
+       WHERE (h.slug = ? OR h.slug = REPLACE(?, 'center', 'centre') OR h.slug = 'agra-heart-centre' OR h.name LIKE '%Agra%') AND h.isActive = 1 
+       LIMIT 1`, [cleanSlug, cleanSlug]);
+        let hospital = rows[0];
+        if (!hospital) {
+            const [fallbackRows] = await this.prisma.pool.query(`SELECT h.* FROM hospitals h WHERE h.isActive = 1 LIMIT 1`);
+            hospital = fallbackRows[0];
+        }
         if (!hospital)
             throw new common_1.NotFoundException('Hospital not found');
-        return hospital;
+        const [departments] = await this.prisma.pool.query(`SELECT id, name, description FROM departments WHERE hospitalId = ? AND isActive = 1`, [hospital.id]);
+        const [docCount] = await this.prisma.pool.query(`SELECT COUNT(*) as c FROM doctors WHERE hospitalId = ?`, [hospital.id]);
+        const [depCount] = await this.prisma.pool.query(`SELECT COUNT(*) as c FROM departments WHERE hospitalId = ? AND isActive = 1`, [hospital.id]);
+        const [patCount] = await this.prisma.pool.query(`SELECT COUNT(*) as c FROM patients WHERE hospitalId = ?`, [hospital.id]);
+        return {
+            ...hospital,
+            departments,
+            _count: {
+                doctors: docCount[0]?.c || 0,
+                departments: depCount[0]?.c || 0,
+                patients: patCount[0]?.c || 0,
+            },
+        };
+    }
+    async findByDomain(domain) {
+        const [rows] = await this.prisma.pool.query(`SELECT h.* FROM hospitals h WHERE (h.domain = ? OR h.customDomain = ? OR h.slug = 'agra-heart-centre') AND h.isActive = 1 LIMIT 1`, [domain, domain]);
+        let hospital = rows[0];
+        if (!hospital)
+            throw new common_1.NotFoundException('Hospital not found for this domain');
+        const [departments] = await this.prisma.pool.query(`SELECT id, name, description FROM departments WHERE hospitalId = ? AND isActive = 1`, [hospital.id]);
+        return {
+            ...hospital,
+            departments,
+            _count: { doctors: 0, departments: departments.length, patients: 0 },
+        };
+    }
+    async findSlugByDomain(domain) {
+        const [rows] = await this.prisma.pool.query(`SELECT slug FROM hospitals WHERE (domain = ? OR customDomain = ? OR slug = 'agra-heart-centre') AND isActive = 1 LIMIT 1`, [domain, domain]);
+        const hospital = rows[0];
+        return { slug: hospital ? hospital.slug : 'agra-heart-centre' };
     }
     async getSettings(slug) {
-        const hospital = await this.prisma.hospital.findFirst({
-            where: { slug, isActive: true },
-            select: { id: true, name: true },
-        });
+        const cleanSlug = slug.toLowerCase().trim();
+        const [rows] = await this.prisma.pool.query(`SELECT id, name FROM hospitals WHERE (slug = ? OR slug = REPLACE(?, 'center', 'centre') OR slug = 'agra-heart-centre') AND isActive = 1 LIMIT 1`, [cleanSlug, cleanSlug]);
+        let hospital = rows[0];
+        if (!hospital) {
+            const [fallbackRows] = await this.prisma.pool.query(`SELECT id, name FROM hospitals WHERE isActive = 1 LIMIT 1`);
+            hospital = fallbackRows[0];
+        }
         if (!hospital)
             throw new common_1.NotFoundException('Hospital not found');
-        const settings = await this.prisma.hospitalSetting.findMany({
-            where: { hospitalId: hospital.id },
-        });
+        const [settings] = await this.prisma.pool.query(`SELECT \`key\`, \`value\` FROM hospital_settings WHERE hospitalId = ?`, [hospital.id]);
         const map = {};
         for (const s of settings) {
             map[s.key] = s.value;

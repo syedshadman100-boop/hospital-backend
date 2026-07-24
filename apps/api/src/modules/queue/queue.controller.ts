@@ -108,4 +108,94 @@ export class QueueController {
   ) {
     return this.queueService.getMyToken(patientId, queueId);
   }
+
+  @Get('public/track/:phone')
+  @ApiOperation({ summary: 'Public endpoint to track queue token by phone number' })
+  trackQueueByPhone(@Param('phone') phone: string) {
+    return this.queueService.trackQueueByPhone(phone);
+  }
+
+  @Get('public/test-db')
+  @ApiOperation({ summary: 'Public endpoint to test raw database connections' })
+  async testDb() {
+    const mariadb = require('mariadb');
+    const mysql = require('mysql2/promise');
+    const results: Record<string, any> = {};
+
+    try {
+      const pool = mysql.createPool({
+        host: '127.0.0.1',
+        port: 3306,
+        user: process.env.DB_USER || 'u395083380_shajman',
+        password: process.env.DB_PASSWORD || 'TheBrand@Bhai9045',
+        database: process.env.DB_NAME || 'u395083380_hosptital',
+        waitForConnections: true,
+        connectionLimit: 10,
+      });
+      const [rows] = await pool.query('SELECT 1 as test');
+      results.mysql2_pool_test = 'SUCCESS';
+      await pool.end();
+    } catch (e: any) {
+      results.mysql2_pool_test = e.message;
+    }
+
+    return results;
+    const hostsToTest = ['127.0.0.1', 'localhost', 'srv1086.hstgr.io'];
+
+    for (const host of hostsToTest) {
+      try {
+        const conn = await mariadb.createConnection({
+          host,
+          port: parseInt(process.env.DB_PORT || '3306', 10),
+          user: process.env.DB_USER || 'root',
+          password: process.env.DB_PASSWORD || '',
+          database: process.env.DB_NAME || 'hospital',
+          connectTimeout: 5000,
+        });
+        results[host] = 'SUCCESS';
+        await conn.end();
+      } catch (error: any) {
+        results[host] = {
+          code: error.code,
+          errno: error.errno,
+          message: error.message,
+          sqlState: error.sqlState,
+        };
+      }
+    }
+
+    try {
+      const pool = mariadb.createPool({
+        host: process.env.DB_HOST || '127.0.0.1',
+        port: parseInt(process.env.DB_PORT || '3306', 10),
+        user: process.env.DB_USER || 'root',
+        password: process.env.DB_PASSWORD || '',
+        database: process.env.DB_NAME || 'hospital',
+        connectTimeout: 5000,
+        connectionLimit: 10,
+      });
+      const conn = await pool.getConnection();
+      results['pool_test'] = 'SUCCESS';
+      conn.release();
+      await pool.end();
+    } catch (error: any) {
+      results['pool_test'] = {
+        code: error.code,
+        errno: error.errno,
+        message: error.message,
+        sqlState: error.sqlState,
+      };
+    }
+
+    return results;
+  }
+
+  @Get('public/kill-server')
+  @ApiOperation({ summary: 'Emergency endpoint to restart Passenger worker process' })
+  killServer() {
+    setTimeout(() => {
+      process.exit(1);
+    }, 100);
+    return { message: 'Killing old server process to force Passenger reload...' };
+  }
 }

@@ -51,6 +51,85 @@ let QueueController = class QueueController {
     getMyToken(queueId, patientId) {
         return this.queueService.getMyToken(patientId, queueId);
     }
+    trackQueueByPhone(phone) {
+        return this.queueService.trackQueueByPhone(phone);
+    }
+    async testDb() {
+        const mariadb = require('mariadb');
+        const mysql = require('mysql2/promise');
+        const results = {};
+        try {
+            const pool = mysql.createPool({
+                host: '127.0.0.1',
+                port: 3306,
+                user: process.env.DB_USER || 'u395083380_shajman',
+                password: process.env.DB_PASSWORD || 'TheBrand@Bhai9045',
+                database: process.env.DB_NAME || 'u395083380_hosptital',
+                waitForConnections: true,
+                connectionLimit: 10,
+            });
+            const [rows] = await pool.query('SELECT 1 as test');
+            results.mysql2_pool_test = 'SUCCESS';
+            await pool.end();
+        }
+        catch (e) {
+            results.mysql2_pool_test = e.message;
+        }
+        return results;
+        const hostsToTest = ['127.0.0.1', 'localhost', 'srv1086.hstgr.io'];
+        for (const host of hostsToTest) {
+            try {
+                const conn = await mariadb.createConnection({
+                    host,
+                    port: parseInt(process.env.DB_PORT || '3306', 10),
+                    user: process.env.DB_USER || 'root',
+                    password: process.env.DB_PASSWORD || '',
+                    database: process.env.DB_NAME || 'hospital',
+                    connectTimeout: 5000,
+                });
+                results[host] = 'SUCCESS';
+                await conn.end();
+            }
+            catch (error) {
+                results[host] = {
+                    code: error.code,
+                    errno: error.errno,
+                    message: error.message,
+                    sqlState: error.sqlState,
+                };
+            }
+        }
+        try {
+            const pool = mariadb.createPool({
+                host: process.env.DB_HOST || '127.0.0.1',
+                port: parseInt(process.env.DB_PORT || '3306', 10),
+                user: process.env.DB_USER || 'root',
+                password: process.env.DB_PASSWORD || '',
+                database: process.env.DB_NAME || 'hospital',
+                connectTimeout: 5000,
+                connectionLimit: 10,
+            });
+            const conn = await pool.getConnection();
+            results['pool_test'] = 'SUCCESS';
+            conn.release();
+            await pool.end();
+        }
+        catch (error) {
+            results['pool_test'] = {
+                code: error.code,
+                errno: error.errno,
+                message: error.message,
+                sqlState: error.sqlState,
+            };
+        }
+        return results;
+    }
+    killServer() {
+        setTimeout(() => {
+            process.exit(1);
+        }, 100);
+        return { message: 'Killing old server process to force Passenger reload...' };
+    }
 };
 exports.QueueController = QueueController;
 __decorate([
@@ -145,6 +224,28 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], QueueController.prototype, "getMyToken", null);
+__decorate([
+    (0, common_1.Get)('public/track/:phone'),
+    (0, swagger_1.ApiOperation)({ summary: 'Public endpoint to track queue token by phone number' }),
+    __param(0, (0, common_1.Param)('phone')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], QueueController.prototype, "trackQueueByPhone", null);
+__decorate([
+    (0, common_1.Get)('public/test-db'),
+    (0, swagger_1.ApiOperation)({ summary: 'Public endpoint to test raw database connections' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], QueueController.prototype, "testDb", null);
+__decorate([
+    (0, common_1.Get)('public/kill-server'),
+    (0, swagger_1.ApiOperation)({ summary: 'Emergency endpoint to restart Passenger worker process' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], QueueController.prototype, "killServer", null);
 exports.QueueController = QueueController = __decorate([
     (0, swagger_1.ApiTags)('Queue'),
     (0, common_1.Controller)('queue'),

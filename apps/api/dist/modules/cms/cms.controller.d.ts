@@ -3,34 +3,9 @@ import { CreateCmsPageDto, UpdateCmsPageDto, CreateBlogDto, UpdateBlogDto, Creat
 export declare class CmsController {
     private cmsService;
     constructor(cmsService: CmsService);
-    getPageBySlug(slug: string): Promise<{
-        title: string;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        slug: string;
-        content: string;
-        metaTitle: string | null;
-        metaDesc: string | null;
-        isPublished: boolean;
-    }>;
+    getPageBySlug(slug: string): Promise<any>;
     getBlogs(filters: CmsFilterDto): Promise<{
-        data: {
-            title: string;
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            tags: string | null;
-            slug: string;
-            content: string;
-            category: string | null;
-            isPublished: boolean;
-            excerpt: string | null;
-            coverImage: string | null;
-            author: string | null;
-            publishedAt: Date | null;
-            viewCount: number;
-        }[];
+        data: any[];
         meta: {
             total: number;
             page: number;
@@ -38,33 +13,9 @@ export declare class CmsController {
             totalPages: number;
         };
     }>;
-    getBlogBySlug(slug: string): Promise<{
-        title: string;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        tags: string | null;
-        slug: string;
-        content: string;
-        category: string | null;
-        isPublished: boolean;
-        excerpt: string | null;
-        coverImage: string | null;
-        author: string | null;
-        publishedAt: Date | null;
-        viewCount: number;
-    }>;
+    getBlogBySlug(slug: string): Promise<any>;
     getFaqs(filters: CmsFilterDto): Promise<{
-        data: {
-            id: string;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            category: string | null;
-            question: string;
-            answer: string;
-            sortOrder: number;
-        }[];
+        data: any[];
         meta: {
             total: number;
             page: number;
@@ -72,26 +23,9 @@ export declare class CmsController {
             totalPages: number;
         };
     }>;
-    getTestimonials(): Promise<{
-        id: string;
-        createdAt: Date;
-        content: string;
-        rating: number;
-        isPublished: boolean;
-        patientName: string;
-        patientAvatar: string | null;
-    }[]>;
+    getTestimonials(): Promise<any[]>;
     getGallery(filters: GalleryFilterDto): Promise<{
-        data: {
-            title: string | null;
-            id: string;
-            isActive: boolean;
-            createdAt: Date;
-            category: string | null;
-            fileUrl: string;
-            fileType: string;
-            sortOrder: number;
-        }[];
+        data: any[];
         meta: {
             total: number;
             page: number;
@@ -99,29 +33,9 @@ export declare class CmsController {
             totalPages: number;
         };
     }>;
-    createContactMessage(dto: CreateContactMessageDto): Promise<{
-        email: string;
-        phone: string | null;
-        id: string;
-        createdAt: Date;
-        name: string;
-        message: string;
-        isRead: boolean;
-        subject: string | null;
-        repliedAt: Date | null;
-    }>;
+    createContactMessage(dto: CreateContactMessageDto): Promise<any>;
     getPagesAdmin(filters: CmsFilterDto): Promise<{
-        data: {
-            title: string;
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            slug: string;
-            content: string;
-            metaTitle: string | null;
-            metaDesc: string | null;
-            isPublished: boolean;
-        }[];
+        data: any[];
         meta: {
             total: number;
             page: number;
@@ -129,56 +43,11 @@ export declare class CmsController {
             totalPages: number;
         };
     }>;
-    createPage(dto: CreateCmsPageDto): Promise<{
-        title: string;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        slug: string;
-        content: string;
-        metaTitle: string | null;
-        metaDesc: string | null;
-        isPublished: boolean;
-    }>;
-    updatePage(id: string, dto: UpdateCmsPageDto): Promise<{
-        title: string;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        slug: string;
-        content: string;
-        metaTitle: string | null;
-        metaDesc: string | null;
-        isPublished: boolean;
-    }>;
-    removePage(id: string): Promise<{
-        title: string;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        slug: string;
-        content: string;
-        metaTitle: string | null;
-        metaDesc: string | null;
-        isPublished: boolean;
-    }>;
+    createPage(dto: CreateCmsPageDto): Promise<any>;
+    updatePage(id: string, dto: UpdateCmsPageDto): Promise<any>;
+    removePage(id: string): Promise<any>;
     getBlogsAdmin(filters: CmsFilterDto): Promise<{
-        data: {
-            title: string;
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            tags: string | null;
-            slug: string;
-            content: string;
-            category: string | null;
-            isPublished: boolean;
-            excerpt: string | null;
-            coverImage: string | null;
-            author: string | null;
-            publishedAt: Date | null;
-            viewCount: number;
-        }[];
+        data: any[];
         meta: {
             total: number;
             page: number;
@@ -186,65 +55,11 @@ export declare class CmsController {
             totalPages: number;
         };
     }>;
-    createBlog(dto: CreateBlogDto): Promise<{
-        title: string;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        tags: string | null;
-        slug: string;
-        content: string;
-        category: string | null;
-        isPublished: boolean;
-        excerpt: string | null;
-        coverImage: string | null;
-        author: string | null;
-        publishedAt: Date | null;
-        viewCount: number;
-    }>;
-    updateBlog(id: string, dto: UpdateBlogDto): Promise<{
-        title: string;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        tags: string | null;
-        slug: string;
-        content: string;
-        category: string | null;
-        isPublished: boolean;
-        excerpt: string | null;
-        coverImage: string | null;
-        author: string | null;
-        publishedAt: Date | null;
-        viewCount: number;
-    }>;
-    removeBlog(id: string): Promise<{
-        title: string;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        tags: string | null;
-        slug: string;
-        content: string;
-        category: string | null;
-        isPublished: boolean;
-        excerpt: string | null;
-        coverImage: string | null;
-        author: string | null;
-        publishedAt: Date | null;
-        viewCount: number;
-    }>;
+    createBlog(dto: CreateBlogDto): Promise<any>;
+    updateBlog(id: string, dto: UpdateBlogDto): Promise<any>;
+    removeBlog(id: string): Promise<any>;
     getFaqsAdmin(filters: CmsFilterDto): Promise<{
-        data: {
-            id: string;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            category: string | null;
-            question: string;
-            answer: string;
-            sortOrder: number;
-        }[];
+        data: any[];
         meta: {
             total: number;
             page: number;
@@ -252,46 +67,11 @@ export declare class CmsController {
             totalPages: number;
         };
     }>;
-    createFaq(dto: CreateFaqDto): Promise<{
-        id: string;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        category: string | null;
-        question: string;
-        answer: string;
-        sortOrder: number;
-    }>;
-    updateFaq(id: string, dto: UpdateFaqDto): Promise<{
-        id: string;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        category: string | null;
-        question: string;
-        answer: string;
-        sortOrder: number;
-    }>;
-    removeFaq(id: string): Promise<{
-        id: string;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        category: string | null;
-        question: string;
-        answer: string;
-        sortOrder: number;
-    }>;
+    createFaq(dto: CreateFaqDto): Promise<any>;
+    updateFaq(id: string, dto: UpdateFaqDto): Promise<any>;
+    removeFaq(id: string): Promise<any>;
     getTestimonialsAdmin(filters: CmsFilterDto): Promise<{
-        data: {
-            id: string;
-            createdAt: Date;
-            content: string;
-            rating: number;
-            isPublished: boolean;
-            patientName: string;
-            patientAvatar: string | null;
-        }[];
+        data: any[];
         meta: {
             total: number;
             page: number;
@@ -299,44 +79,11 @@ export declare class CmsController {
             totalPages: number;
         };
     }>;
-    createTestimonial(dto: CreateTestimonialDto): Promise<{
-        id: string;
-        createdAt: Date;
-        content: string;
-        rating: number;
-        isPublished: boolean;
-        patientName: string;
-        patientAvatar: string | null;
-    }>;
-    updateTestimonial(id: string, dto: UpdateTestimonialDto): Promise<{
-        id: string;
-        createdAt: Date;
-        content: string;
-        rating: number;
-        isPublished: boolean;
-        patientName: string;
-        patientAvatar: string | null;
-    }>;
-    removeTestimonial(id: string): Promise<{
-        id: string;
-        createdAt: Date;
-        content: string;
-        rating: number;
-        isPublished: boolean;
-        patientName: string;
-        patientAvatar: string | null;
-    }>;
+    createTestimonial(dto: CreateTestimonialDto): Promise<any>;
+    updateTestimonial(id: string, dto: UpdateTestimonialDto): Promise<any>;
+    removeTestimonial(id: string): Promise<any>;
     getGalleryAdmin(filters: GalleryFilterDto): Promise<{
-        data: {
-            title: string | null;
-            id: string;
-            isActive: boolean;
-            createdAt: Date;
-            category: string | null;
-            fileUrl: string;
-            fileType: string;
-            sortOrder: number;
-        }[];
+        data: any[];
         meta: {
             total: number;
             page: number;
@@ -344,48 +91,11 @@ export declare class CmsController {
             totalPages: number;
         };
     }>;
-    createGallery(dto: CreateGalleryDto): Promise<{
-        title: string | null;
-        id: string;
-        isActive: boolean;
-        createdAt: Date;
-        category: string | null;
-        fileUrl: string;
-        fileType: string;
-        sortOrder: number;
-    }>;
-    updateGallery(id: string, dto: UpdateGalleryDto): Promise<{
-        title: string | null;
-        id: string;
-        isActive: boolean;
-        createdAt: Date;
-        category: string | null;
-        fileUrl: string;
-        fileType: string;
-        sortOrder: number;
-    }>;
-    removeGallery(id: string): Promise<{
-        title: string | null;
-        id: string;
-        isActive: boolean;
-        createdAt: Date;
-        category: string | null;
-        fileUrl: string;
-        fileType: string;
-        sortOrder: number;
-    }>;
+    createGallery(dto: CreateGalleryDto): Promise<any>;
+    updateGallery(id: string, dto: UpdateGalleryDto): Promise<any>;
+    removeGallery(id: string): Promise<any>;
     getContactMessages(filters: CmsFilterDto): Promise<{
-        data: {
-            email: string;
-            phone: string | null;
-            id: string;
-            createdAt: Date;
-            name: string;
-            message: string;
-            isRead: boolean;
-            subject: string | null;
-            repliedAt: Date | null;
-        }[];
+        data: any[];
         meta: {
             total: number;
             page: number;
@@ -393,15 +103,5 @@ export declare class CmsController {
             totalPages: number;
         };
     }>;
-    markContactMessageAsRead(id: string): Promise<{
-        email: string;
-        phone: string | null;
-        id: string;
-        createdAt: Date;
-        name: string;
-        message: string;
-        isRead: boolean;
-        subject: string | null;
-        repliedAt: Date | null;
-    }>;
+    markContactMessageAsRead(id: string): Promise<any>;
 }

@@ -157,7 +157,7 @@ const DEPARTMENTS = [
 ];
 
 const SAMPLE_DOCTORS = [
-  { firstName: 'Rajesh', lastName: 'Sharma', email: 'dr.rajesh@hospital.com', specialization: 'Interventional Cardiology', experience: 18, qualification: 'MD, DM Cardiology', consultationFee: 1500, gender: 'Male', languages: 'English, Hindi' },
+  { firstName: 'C.R.', lastName: 'Rawat', email: 'dr.rawat@hospital.com', specialization: 'Interventional Cardiology', experience: 40, qualification: 'MD, DM Cardiology', consultationFee: 1500, gender: 'Male', languages: 'English, Hindi' },
   { firstName: 'Priya', lastName: 'Patel', email: 'dr.priya@hospital.com', specialization: 'Clinical Neurology', experience: 12, qualification: 'MD, DM Neurology', consultationFee: 1200, gender: 'Female', languages: 'English, Hindi, Gujarati' },
   { firstName: 'Arun', lastName: 'Kumar', email: 'dr.arun@hospital.com', specialization: 'Joint Replacement', experience: 15, qualification: 'MS Orthopedics, Fellowship', consultationFee: 1000, gender: 'Male', languages: 'English, Hindi, Tamil' },
   { firstName: 'Sneha', lastName: 'Reddy', email: 'dr.sneha@hospital.com', specialization: 'Pediatric Cardiology', experience: 10, qualification: 'MD Pediatrics, Fellowship Pediatric Cardiology', consultationFee: 1000, gender: 'Female', languages: 'English, Hindi, Telugu' },
@@ -500,7 +500,7 @@ async function main() {
   console.log('Login credentials:');
   console.log('  Super Admin: superadmin@hospital.com / Admin@123');
   console.log('  Hospital Admin: admin@citycare.com / Admin@123');
-  console.log('  Doctors: dr.rajesh@hospital.com / dr.priya@hospital.com ... / Admin@123');
+  console.log('  Doctors: dr.rawat@hospital.com / dr.priya@hospital.com ... / Admin@123');
 }
 
 main()

@@ -40,14 +40,19 @@ let DoctorService = class DoctorService {
                 take: limit,
                 orderBy: { createdAt: 'desc' },
                 include: {
+                    user: { select: { avatar: true } },
                     department: { select: { id: true, name: true } },
                     _count: { select: { appointments: true, schedules: true } },
                 },
             }),
             this.prisma.doctor.count({ where }),
         ]);
+        const formattedData = data.map((d) => ({
+            ...d,
+            avatar: d.user?.avatar || null,
+        }));
         return {
-            data,
+            data: formattedData,
             meta: {
                 total,
                 page,
@@ -193,10 +198,7 @@ let DoctorService = class DoctorService {
         if (!schedule || !schedule.isActive) {
             return { data: [] };
         }
-        const existingAppointments = await this.prisma.$queryRaw `SELECT startTime FROM appointments 
-      WHERE doctorId = ${doctorId} 
-      AND DATE(appointmentDate) = ${date}
-      AND status IN ('scheduled', 'confirmed', 'in_progress')`;
+        const existingAppointments = await this.prisma.$queryRaw(`SELECT startTime FROM appointments WHERE doctorId = ? AND DATE(appointmentDate) = ? AND status IN ('scheduled', 'confirmed', 'in_progress')`, doctorId, date);
         const bookedSlots = new Set(existingAppointments.map((apt) => apt.startTime));
         const allSlots = [];
         const [startHour, startMinute] = schedule.startTime.split(':').map(Number);

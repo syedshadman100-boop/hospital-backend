@@ -3,75 +3,9 @@ import { CreateInvoiceDto, CreatePaymentDto, RefundPaymentDto, InvoiceFilterDto 
 export declare class BillingService {
     private prisma;
     constructor(prisma: PrismaService);
-    createInvoice(dto: CreateInvoiceDto, hospitalId: string): Promise<{
-        patient: {
-            firstName: string;
-            lastName: string;
-            phone: string;
-            id: string;
-        };
-        invoiceItems: {
-            description: string;
-            id: string;
-            createdAt: Date;
-            total: import("@prisma/client-runtime-utils").Decimal;
-            quantity: number;
-            unitPrice: import("@prisma/client-runtime-utils").Decimal;
-            invoiceId: string;
-        }[];
-    } & {
-        id: string;
-        hospitalId: string;
-        createdAt: Date;
-        updatedAt: Date;
-        patientId: string;
-        appointmentId: string | null;
-        invoiceNumber: string;
-        subtotal: import("@prisma/client-runtime-utils").Decimal;
-        taxAmount: import("@prisma/client-runtime-utils").Decimal;
-        discount: import("@prisma/client-runtime-utils").Decimal;
-        totalAmount: import("@prisma/client-runtime-utils").Decimal;
-        paidAmount: import("@prisma/client-runtime-utils").Decimal;
-        status: string;
-        paymentMethod: string | null;
-        notes: string | null;
-    }>;
+    createInvoice(dto: CreateInvoiceDto, hospitalId: string): Promise<any>;
     findAll(hospitalId: string, filters: InvoiceFilterDto): Promise<{
-        data: ({
-            patient: {
-                firstName: string;
-                lastName: string;
-                phone: string;
-                id: string;
-            };
-            _count: {
-                payments: number;
-                invoiceItems: number;
-            };
-            payments: {
-                id: string;
-                status: string;
-                paymentMethod: string;
-                amount: import("@prisma/client-runtime-utils").Decimal;
-                paymentDate: Date;
-            }[];
-        } & {
-            id: string;
-            hospitalId: string;
-            createdAt: Date;
-            updatedAt: Date;
-            patientId: string;
-            appointmentId: string | null;
-            invoiceNumber: string;
-            subtotal: import("@prisma/client-runtime-utils").Decimal;
-            taxAmount: import("@prisma/client-runtime-utils").Decimal;
-            discount: import("@prisma/client-runtime-utils").Decimal;
-            totalAmount: import("@prisma/client-runtime-utils").Decimal;
-            paidAmount: import("@prisma/client-runtime-utils").Decimal;
-            status: string;
-            paymentMethod: string | null;
-            notes: string | null;
-        })[];
+        data: any[];
         meta: {
             total: number;
             page: number;
@@ -79,115 +13,23 @@ export declare class BillingService {
             totalPages: number;
         };
     }>;
-    findOne(id: string): Promise<{
-        patient: {
-            email: string | null;
-            firstName: string;
-            lastName: string;
-            phone: string;
-            id: string;
-        };
-        appointment: {
-            id: string;
-            startTime: string;
-            endTime: string;
-            appointmentDate: Date;
-        } | null;
-        payments: {
-            id: string;
-            createdAt: Date;
-            status: string;
-            paymentMethod: string;
-            invoiceId: string;
-            amount: import("@prisma/client-runtime-utils").Decimal;
-            transactionId: string | null;
-            refundedAmount: import("@prisma/client-runtime-utils").Decimal | null;
-            refundReason: string | null;
-            paymentDate: Date;
-        }[];
-        invoiceItems: {
-            description: string;
-            id: string;
-            createdAt: Date;
-            total: import("@prisma/client-runtime-utils").Decimal;
-            quantity: number;
-            unitPrice: import("@prisma/client-runtime-utils").Decimal;
-            invoiceId: string;
-        }[];
-    } & {
-        id: string;
-        hospitalId: string;
-        createdAt: Date;
-        updatedAt: Date;
-        patientId: string;
-        appointmentId: string | null;
-        invoiceNumber: string;
-        subtotal: import("@prisma/client-runtime-utils").Decimal;
-        taxAmount: import("@prisma/client-runtime-utils").Decimal;
-        discount: import("@prisma/client-runtime-utils").Decimal;
-        totalAmount: import("@prisma/client-runtime-utils").Decimal;
-        paidAmount: import("@prisma/client-runtime-utils").Decimal;
-        status: string;
-        paymentMethod: string | null;
-        notes: string | null;
-    }>;
-    createPayment(dto: CreatePaymentDto, hospitalId: string): Promise<{
-        id: string;
-        createdAt: Date;
-        status: string;
-        paymentMethod: string;
-        invoiceId: string;
-        amount: import("@prisma/client-runtime-utils").Decimal;
-        transactionId: string | null;
-        refundedAmount: import("@prisma/client-runtime-utils").Decimal | null;
-        refundReason: string | null;
-        paymentDate: Date;
-    }>;
+    findOne(id: string): Promise<any>;
+    createPayment(dto: CreatePaymentDto, hospitalId: string): Promise<any>;
     getInvoiceSummary(invoiceId: string): Promise<{
         invoice: {
-            id: string;
-            invoiceNumber: string;
-            subtotal: import("@prisma/client-runtime-utils").Decimal;
-            taxAmount: import("@prisma/client-runtime-utils").Decimal;
-            discount: import("@prisma/client-runtime-utils").Decimal;
-            totalAmount: import("@prisma/client-runtime-utils").Decimal;
-            status: string;
+            id: any;
+            invoiceNumber: any;
+            subtotal: any;
+            taxAmount: any;
+            discount: any;
+            totalAmount: any;
+            status: any;
         };
-        items: {
-            description: string;
-            id: string;
-            createdAt: Date;
-            total: import("@prisma/client-runtime-utils").Decimal;
-            quantity: number;
-            unitPrice: import("@prisma/client-runtime-utils").Decimal;
-            invoiceId: string;
-        }[];
-        payments: {
-            id: string;
-            createdAt: Date;
-            status: string;
-            paymentMethod: string;
-            invoiceId: string;
-            amount: import("@prisma/client-runtime-utils").Decimal;
-            transactionId: string | null;
-            refundedAmount: import("@prisma/client-runtime-utils").Decimal | null;
-            refundReason: string | null;
-            paymentDate: Date;
-        }[];
-        totalPaid: number;
+        items: any;
+        payments: any;
+        totalPaid: any;
         balance: number;
     }>;
-    refundPayment(paymentId: string, dto: RefundPaymentDto, hospitalId: string): Promise<{
-        id: string;
-        createdAt: Date;
-        status: string;
-        paymentMethod: string;
-        invoiceId: string;
-        amount: import("@prisma/client-runtime-utils").Decimal;
-        transactionId: string | null;
-        refundedAmount: import("@prisma/client-runtime-utils").Decimal | null;
-        refundReason: string | null;
-        paymentDate: Date;
-    }>;
+    refundPayment(paymentId: string, dto: RefundPaymentDto, hospitalId: string): Promise<any>;
     private generateInvoiceNumber;
 }

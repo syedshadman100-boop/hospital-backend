@@ -37,6 +37,7 @@ export class DoctorService {
         take: limit,
         orderBy: { createdAt: 'desc' },
         include: {
+          user: { select: { avatar: true } },
           department: { select: { id: true, name: true } },
           _count: { select: { appointments: true, schedules: true } },
         },
@@ -44,8 +45,13 @@ export class DoctorService {
       this.prisma.doctor.count({ where }),
     ]);
 
+    const formattedData = data.map((d: any) => ({
+      ...d,
+      avatar: d.user?.avatar || null,
+    }));
+
     return {
-      data,
+      data: formattedData,
       meta: {
         total,
         page,
@@ -220,12 +226,11 @@ export class DoctorService {
       return { data: [] };
     }
 
-    const existingAppointments = await this.prisma.$queryRaw<
-      { startTime: string }[]
-    >`SELECT startTime FROM appointments 
-      WHERE doctorId = ${doctorId} 
-      AND DATE(appointmentDate) = ${date}
-      AND status IN ('scheduled', 'confirmed', 'in_progress')`;
+    const existingAppointments: any = await this.prisma.$queryRaw(
+      `SELECT startTime FROM appointments WHERE doctorId = ? AND DATE(appointmentDate) = ? AND status IN ('scheduled', 'confirmed', 'in_progress')`,
+      doctorId,
+      date
+    );
 
     const bookedSlots = new Set(
       existingAppointments.map((apt) => apt.startTime),

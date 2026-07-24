@@ -27,6 +27,18 @@ __decorate([
     __metadata("design:type", String)
 ], CreateHospitalDto.prototype, "slug", void 0);
 __decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 'cityhospital.com' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateHospitalDto.prototype, "domain", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: 'www.cityhospital.com' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsString)(),
+    __metadata("design:type", String)
+], CreateHospitalDto.prototype, "customDomain", void 0);
+__decorate([
     (0, swagger_1.ApiPropertyOptional)({ example: 'contact@cityhospital.com' }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsEmail)(),

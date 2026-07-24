@@ -3,15 +3,17 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "build": "npm i --prefix apps/api && npm run build:api",
+    "postinstall": "npm run build",
+    "start": "npm run start:api",
     "dev:api": "cd apps/api && npx nest start --watch",
     "dev:web": "cd apps/web && npx next dev",
     "build:api": "cd apps/api && npx nest build",
     "build:web": "cd apps/web && npx next build",
     "start:api": "cd apps/api && node dist/main.js",
-    "start:web": "cd apps/web && npx next start",
-    "db:push": "cd packages/prisma && npx prisma db push",
-    "db:generate": "cd packages/prisma && npx prisma generate",
-    "db:seed": "npx ts-node --project packages/prisma/tsconfig.seed.json packages/prisma/prisma/seed.ts",
-    "db:studio": "cd packages/prisma && npx prisma studio"
+    "start:web": "cd apps/web && npx next start"
+  },
+  "dependencies": {
+    "mysql2": "^3.23.1"
   }
 }

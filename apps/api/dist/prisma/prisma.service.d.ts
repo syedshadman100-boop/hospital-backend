@@ -1,7 +1,61 @@
 import { OnModuleInit, OnModuleDestroy } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
-export declare class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
+import * as mysql from 'mysql2/promise';
+export declare class ModelQueryBuilder {
+    private pool;
+    private tableName;
+    constructor(pool: mysql.Pool, tableName: string);
+    findFirst(args?: any): Promise<any>;
+    findUnique(args?: any): Promise<any>;
+    findMany(args?: any): Promise<any[]>;
+    create(args: any): Promise<any>;
+    createMany(args: any): Promise<any>;
+    update(args: any): Promise<any>;
+    updateMany(args: any): Promise<any>;
+    upsert(args: any): Promise<any>;
+    delete(args: any): Promise<any>;
+    deleteMany(args?: any): Promise<any>;
+    count(args?: any): Promise<number>;
+    aggregate(args?: any): Promise<any>;
+    groupBy(args?: any): Promise<any[]>;
+}
+export declare class PrismaService implements OnModuleInit, OnModuleDestroy {
+    pool: mysql.Pool;
+    hospital: ModelQueryBuilder;
+    doctor: ModelQueryBuilder;
+    department: ModelQueryBuilder;
+    appointment: ModelQueryBuilder;
+    queue: ModelQueryBuilder;
+    queueToken: ModelQueryBuilder;
+    user: ModelQueryBuilder;
+    role: ModelQueryBuilder;
+    patient: ModelQueryBuilder;
+    medicalRecord: ModelQueryBuilder;
+    labTest: ModelQueryBuilder;
+    labReport: ModelQueryBuilder;
+    medicine: ModelQueryBuilder;
+    staff: ModelQueryBuilder;
+    cmsPage: ModelQueryBuilder;
+    blog: ModelQueryBuilder;
+    faq: ModelQueryBuilder;
+    testimonial: ModelQueryBuilder;
+    gallery: ModelQueryBuilder;
+    contactMessage: ModelQueryBuilder;
+    notification: ModelQueryBuilder;
+    invoice: ModelQueryBuilder;
+    doctorSchedule: ModelQueryBuilder;
+    doctorVacation: ModelQueryBuilder;
+    hospitalSetting: ModelQueryBuilder;
+    prescription: ModelQueryBuilder;
+    rolePermission: ModelQueryBuilder;
+    permission: ModelQueryBuilder;
+    attendance: ModelQueryBuilder;
+    leave: ModelQueryBuilder;
+    userRole: ModelQueryBuilder;
+    payment: ModelQueryBuilder;
     constructor();
     onModuleInit(): Promise<void>;
     onModuleDestroy(): Promise<void>;
+    $queryRaw(query: any, ...values: any[]): Promise<any>;
+    $executeRaw(query: any, ...values: any[]): Promise<any>;
+    $transaction(cbOrList: any): Promise<any>;
 }

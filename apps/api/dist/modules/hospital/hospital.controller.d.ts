@@ -3,65 +3,18 @@ import { CreateHospitalDto, UpdateHospitalDto } from './dto/hospital.dto';
 export declare class HospitalController {
     private hospitalService;
     constructor(hospitalService: HospitalService);
-    findBySlug(slug: string): Promise<{
-        departments: {
-            description: string | null;
-            id: string;
-            name: string;
-        }[];
-        _count: {
-            departments: number;
-            doctors: number;
-            patients: number;
-        };
-    } & {
-        description: string | null;
-        email: string | null;
-        phone: string | null;
-        id: string;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        name: string;
-        slug: string;
-        address: string | null;
-        city: string | null;
-        state: string | null;
-        country: string | null;
-        pincode: string | null;
-        latitude: number | null;
-        longitude: number | null;
-        logo: string | null;
-        banner: string | null;
-        website: string | null;
-    }>;
+    findBySlug(slug: string): Promise<any>;
     getSettings(slug: string): Promise<{
-        hospitalId: string;
-        name: string;
+        hospitalId: any;
+        name: any;
         settings: Record<string, string>;
     }>;
+    lookupByDomain(domain: string): Promise<{
+        slug: string;
+    } | null>;
+    findByDomain(domain: string): Promise<any>;
     findAll(page?: string, limit?: string, search?: string): Promise<{
-        data: {
-            description: string | null;
-            email: string | null;
-            phone: string | null;
-            id: string;
-            isActive: boolean;
-            createdAt: Date;
-            updatedAt: Date;
-            name: string;
-            slug: string;
-            address: string | null;
-            city: string | null;
-            state: string | null;
-            country: string | null;
-            pincode: string | null;
-            latitude: number | null;
-            longitude: number | null;
-            logo: string | null;
-            banner: string | null;
-            website: string | null;
-        }[];
+        data: any[];
         meta: {
             total: number;
             page: number;
@@ -69,88 +22,8 @@ export declare class HospitalController {
             totalPages: number;
         };
     }>;
-    findOne(id: string): Promise<{
-        description: string | null;
-        email: string | null;
-        phone: string | null;
-        id: string;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        name: string;
-        slug: string;
-        address: string | null;
-        city: string | null;
-        state: string | null;
-        country: string | null;
-        pincode: string | null;
-        latitude: number | null;
-        longitude: number | null;
-        logo: string | null;
-        banner: string | null;
-        website: string | null;
-    }>;
-    create(dto: CreateHospitalDto, user: any): Promise<{
-        description: string | null;
-        email: string | null;
-        phone: string | null;
-        id: string;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        name: string;
-        slug: string;
-        address: string | null;
-        city: string | null;
-        state: string | null;
-        country: string | null;
-        pincode: string | null;
-        latitude: number | null;
-        longitude: number | null;
-        logo: string | null;
-        banner: string | null;
-        website: string | null;
-    }>;
-    update(id: string, dto: UpdateHospitalDto): Promise<{
-        description: string | null;
-        email: string | null;
-        phone: string | null;
-        id: string;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        name: string;
-        slug: string;
-        address: string | null;
-        city: string | null;
-        state: string | null;
-        country: string | null;
-        pincode: string | null;
-        latitude: number | null;
-        longitude: number | null;
-        logo: string | null;
-        banner: string | null;
-        website: string | null;
-    }>;
-    remove(id: string): Promise<{
-        description: string | null;
-        email: string | null;
-        phone: string | null;
-        id: string;
-        isActive: boolean;
-        createdAt: Date;
-        updatedAt: Date;
-        name: string;
-        slug: string;
-        address: string | null;
-        city: string | null;
-        state: string | null;
-        country: string | null;
-        pincode: string | null;
-        latitude: number | null;
-        longitude: number | null;
-        logo: string | null;
-        banner: string | null;
-        website: string | null;
-    }>;
+    findOne(id: string): Promise<any>;
+    create(dto: CreateHospitalDto, user: any): Promise<any>;
+    update(id: string, dto: UpdateHospitalDto): Promise<any>;
+    remove(id: string): Promise<any>;
 }

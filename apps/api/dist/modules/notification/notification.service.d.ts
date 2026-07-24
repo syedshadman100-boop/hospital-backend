@@ -3,31 +3,9 @@ import { CreateNotificationDto, NotificationFilterDto } from './dto/notification
 export declare class NotificationService {
     private prisma;
     constructor(prisma: PrismaService);
-    create(dto: CreateNotificationDto): Promise<{
-        type: string;
-        title: string;
-        id: string;
-        createdAt: Date;
-        userId: string;
-        data: import("@prisma/client/runtime/client").JsonValue | null;
-        message: string;
-        isRead: boolean;
-        channel: string | null;
-        sentAt: Date | null;
-    }>;
+    create(dto: CreateNotificationDto): Promise<any>;
     findAll(userId: string, filters: NotificationFilterDto): Promise<{
-        data: {
-            type: string;
-            title: string;
-            id: string;
-            createdAt: Date;
-            userId: string;
-            data: import("@prisma/client/runtime/client").JsonValue | null;
-            message: string;
-            isRead: boolean;
-            channel: string | null;
-            sentAt: Date | null;
-        }[];
+        data: any[];
         meta: {
             total: number;
             page: number;
@@ -35,34 +13,12 @@ export declare class NotificationService {
             totalPages: number;
         };
     }>;
-    markAsRead(id: string): Promise<{
-        type: string;
-        title: string;
-        id: string;
-        createdAt: Date;
-        userId: string;
-        data: import("@prisma/client/runtime/client").JsonValue | null;
-        message: string;
-        isRead: boolean;
-        channel: string | null;
-        sentAt: Date | null;
-    }>;
+    markAsRead(id: string): Promise<any>;
     markAllAsRead(userId: string): Promise<{
         message: string;
     }>;
     getUnreadCount(userId: string): Promise<{
         count: number;
     }>;
-    sendNotification(userId: string, title: string, message: string, type: string, data?: Record<string, any>): Promise<{
-        type: string;
-        title: string;
-        id: string;
-        createdAt: Date;
-        userId: string;
-        data: import("@prisma/client/runtime/client").JsonValue | null;
-        message: string;
-        isRead: boolean;
-        channel: string | null;
-        sentAt: Date | null;
-    }>;
+    sendNotification(userId: string, title: string, message: string, type: string, data?: Record<string, any>): Promise<any>;
 }
